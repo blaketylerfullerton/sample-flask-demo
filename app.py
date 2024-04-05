@@ -4,7 +4,7 @@ import requests
 
 app = Flask(__name__)
 
-ngrok_url = "https://cefe-144-37-98-25.ngrok-free.app"
+ngrok_url = "https://b460-144-37-98-25.ngrok-free.app"
 @app.route("/")
 def hello_world():
     return render_template("index.html")
