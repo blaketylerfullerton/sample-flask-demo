@@ -5,9 +5,10 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 import json
 from datasets import Dataset
 from pinecone import Pinecone
-from pinecone import ServerlessSpec
-from langchain.vectorstores import Pinecone
+from pinecone import ServerlessSpec, Pinecone
+#from langchain.vectorstores import Pinecone
 import time
+
 
 # Initialize variables or objects that will be used across requests
 openai_api_key = os.environ["OPENAI_API_KEY"]
