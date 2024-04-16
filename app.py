@@ -25,9 +25,13 @@ def generate_fake_price():
 
 @app.route("/endpoint", methods=["POST", "GET"])
 def your_endpoint():
-    #fake_price = generate_fake_price()
-    return jsonify({'price': 69420})
-
+    fake_data = {
+        'assignments': 'homework 3',
+        'description': 'write a 69 page essay',
+        'points_possible': '120'
+    }
+    return jsonify(fake_data)
+    
 @app.route("/submit-form", methods=["POST"])
 def submit_form_simple():
     phone = request.form.get("phone")
