@@ -23,7 +23,7 @@ def generate_fake_price():
     return round(random.uniform(10, 100), 2)
 
 
-@app.route("/endpoint", methods=["POST"])
+@app.route("/endpoint", methods=["POST, GET"])
 def your_endpoint():
     #fake_price = generate_fake_price()
     return jsonify({'price': 69420})
