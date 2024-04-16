@@ -17,7 +17,7 @@ chat = ChatOpenAI(
 )
 
 # Load JSON data from a local file
-with open(current_app.root_path + "/data/assignments.json", "r") as f:
+with open("/data/assignments.json", "r") as f:
     json_data = json.load(f)
 dataset = Dataset.from_dict({"Assignment": json_data})
 
