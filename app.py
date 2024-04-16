@@ -22,8 +22,8 @@ with open("data/assignments.json", "r") as f:
 dataset = Dataset.from_dict({"Assignment": json_data})
 
 # Initialize Pinecone index and other necessary variables
-api_key = "c5602bb4-c7a1-42d5-b761-99730b1a85f1"
-pc = Pinecone(api_key=api_key)
+pine_cone_api_key = os.environ["PINECONE_API_KEY"]
+pc = Pinecone(api_key=pine_cone_api_key)
 index_name = 'athena-testing'
 spec = ServerlessSpec(
     cloud="aws", region="us-east-1"
