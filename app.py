@@ -55,6 +55,9 @@ def query():
     # Get query parameter from request
     query_text = request.json.get("query")
 
+    text_field = "name"  # the metadata field that contains our text
+
+
     # initialize the vector store object
     vectorstore = Pinecone(
         index, embed_model.embed_query, text_field
