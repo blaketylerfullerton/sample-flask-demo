@@ -39,6 +39,18 @@ app = Flask(__name__)
 # Define routes
 @app.route("/query", methods=["POST"])
 def query():
+    # Get request headers
+    headers = request.headers
+
+    # Get request data
+    data = request.data
+
+    # Print headers and data
+    print("Request Headers:")
+    print(headers)
+    print("Request Data:")
+    print(data)
+    
     # Get query parameter from request
     query_text = request.json.get("query")
     
