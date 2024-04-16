@@ -54,6 +54,11 @@ def query():
     
     # Get query parameter from request
     query_text = request.json.get("query")
+
+    # initialize the vector store object
+    vectorstore = Pinecone(
+        index, embed_model.embed_query, text_field
+    )
     
     # Use the query text to search through your vector database
     similar_items = vectorstore.similarity_search(query_text, k=5)
@@ -65,7 +70,7 @@ def query():
             "name": item.name,
             "data": item.data
         })
-    
+    print(response_data)
     # Return the response
     return jsonify({"response_data": response_data})
 
