@@ -10,6 +10,8 @@ from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
 import random
+import mysql.connector
+
 
 res_content = None  # Global variable to store response content
 
@@ -168,7 +170,43 @@ def your_endpoint():
         'points_possible': '120'
     }
     return jsonify(fake_data)
-    
+
+# Function to insert scheduled call into the database
+def insert_scheduled_call(caller_name, caller_number, scheduled_time, notes):
+    # Connect to MySQL server
+    db_connection = mysql.connector.connect(
+        host="athena-do-user-16198044-0.c.db.ondigitalocean.com",
+        user="doadmin",
+        password= os.environ["DB_API_KEY"],
+        database="defaultdb",
+        port=25060
+    )
+    cursor = db_connection.cursor()
+
+    # Insert scheduling information into the database
+    insert_query = "INSERT INTO scheduled_calls (caller_name, caller_number, scheduled_time, notes) VALUES (%s, %s, %s, %s)"
+    cursor.execute(insert_query, (caller_name, caller_number, scheduled_time, notes))
+    db_connection.commit()
+
+    # Close database connection
+    cursor.close()
+    db_connection.close()
+
+# Route to schedule a call
+@app.route("/schedule_call", methods=['POST'])
+def schedule_call():
+    data = request.json
+
+    # Extract necessary information from the request data
+    caller_name = data.get('caller_name')
+    caller_number = data.get('caller_number')
+    scheduled_time = data.get('scheduled_time')
+    notes = data.get('notes')
+
+    # Insert scheduling information into the database
+    insert_scheduled_call(caller_name, caller_number, scheduled_time)
+
+    return jsonify({'message': 'Call scheduled successfully'})
 
 if __name__ == "__main__":
     app.run(debug=True)
