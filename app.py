@@ -13,10 +13,7 @@ from langchain.schema import (
     AIMessage
 )
 messages = [
-    SystemMessage(content="You are a helpful assistant."),
-    HumanMessage(content="Hi AI, how are you today?"),
-    AIMessage(content="I'm great thank you. How can I help you?"),
-    HumanMessage(content="I'd like to understand string theory.")
+    
 ]
 # Initialize variables or objects that will be used across requests
 openai_api_key = os.environ["OPENAI_API_KEY"]
@@ -94,9 +91,9 @@ def query():
 
 
     # Use the query text to search through your vector database
-    similar_items = vectorstore.similarity_search(query_text, k=3)
+    similar_items = vectorstore.similarity_search(query_text, k=5)
     
-    print(similar_items)
+    #print(similar_items)
     similar_items = [
     {
         "page_content": document.page_content,
