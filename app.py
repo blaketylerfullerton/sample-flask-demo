@@ -6,6 +6,12 @@ import json
 from datasets import Dataset
 from pinecone import ServerlessSpec, Pinecone
 import time
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
+from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
+import random
+
+client = Client(account_sid, auth_token)
 
 from langchain.schema import (
     SystemMessage,
@@ -52,7 +58,7 @@ def augment_prompt(query: str):
     # get the text from the results
     source_knowledge = "\n".join([x.page_content for x in results])
     # feed into an augmented prompt
-    augmented_prompt = f"""Using the contexts below, answer the query. be short and consice.
+    augmented_prompt = f"""Using the contexts below, answer the query, be short and consice.
 
     
     {source_knowledge}
@@ -80,7 +86,6 @@ def query():
     if data is None:
         return jsonify({'error': 'Request body is not in JSON format'}), 400
     
-
     # Get query parameter from request
     query_text = str(data.get('query'))
     print('QUERY TEXT TYPE: ', type(query_text))
@@ -88,12 +93,8 @@ def query():
 
     # Use the query text to search through your vector database
     similar_items = vectorstore.similarity_search(query_text, k=3)
-
-
-    # Use the query text to search through your vector database
-    similar_items = vectorstore.similarity_search(query_text, k=5)
     
-    #print(similar_items)
+    print(similar_items)
     similar_items = [
     {
         "page_content": document.page_content,
@@ -122,7 +123,32 @@ def query():
 def hello_world():
     return render_template("index.html")
 
+# Endpoint to send SMS with verification code
+@app.route('/sendtext', methods=['POST'])
+def send_verification_code():
+    # Twilio credentials
+    account_sid = os.getenv("account_sid")
+    auth_token = os.getenv("auth_token")
+    twilio_phone_number = '+12255353633'
 
+    client = Client(account_sid, auth_token)
+    data = request.get_json()
+    phone_number = data.get('phoneNumber')
+
+    # Generate a random verification code
+    verification_code = str(random.randint(1000, 9999))
+
+    # Send SMS
+    message = client.messages.create(
+        body=f'Your verification code is: {verification_code}',
+        from_=twilio_phone_number,
+        to=phone_number
+    )
+
+    print(f"SMS sent to {phone_number}. SID: {message.sid}. {verification_code}")
+
+
+    return jsonify({'satus': 'all good'})#@verification_code
 
 @app.route("/test")
 def backup():
