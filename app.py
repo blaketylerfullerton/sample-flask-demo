@@ -204,7 +204,7 @@ def schedule_call():
     notes = data.get('notes')
 
     # Insert scheduling information into the database
-    insert_scheduled_call(caller_name, caller_number, scheduled_time)
+    insert_scheduled_call(caller_name, caller_number, scheduled_time, notes)
 
     return jsonify({'message': 'Call scheduled successfully'})
 
