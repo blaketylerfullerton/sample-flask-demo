@@ -191,8 +191,8 @@ def insert_scheduled_call(caller_name, caller_number, scheduled_time, notes):
     formatted_datetime_str = dt_object.strftime('%Y-%m-%d %H:%M:%S')
 
     # Insert scheduling information into the database
-    insert_query = "INSERT INTO scheduled_calls (caller_name, caller_number, formatted_datetime_str, notes) VALUES (%s, %s, %s, %s)"
-    cursor.execute(insert_query, (caller_name, caller_number, scheduled_time, notes))
+    insert_query = "INSERT INTO scheduled_calls (caller_name, caller_number, scheduled_time, notes) VALUES (%s, %s, %s, %s)"
+    cursor.execute(insert_query, (caller_name, caller_number, formatted_datetime_str, notes))
     db_connection.commit()
 
     # Close database connection
