@@ -11,6 +11,8 @@ from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
 import random
 
+res_content = None  # Global variable to store response content
+
 
 from langchain.schema import (
     SystemMessage,
@@ -113,6 +115,7 @@ def query():
     )
 
     res = chat(messages + [prompt])
+    res_content = res.content  # Storing response content in the global variable
     print(res.content)
     
     # Return the response
@@ -139,21 +142,19 @@ def send_verification_code():
     client = Client(account_sid, auth_token)
     data = request.get_json()
     phone_number = data.get('phoneNumber')
-
-    # Generate a random verification code
-    verification_code = str(random.randint(1000, 9999))
+    information = res_content  # Using the response content from the /query endpoint
 
     # Send SMS
     message = client.messages.create(
-        body=f'Your verification code is: {verification_code}',
+        body=f'{information}',
         from_=twilio_phone_number,
         to=phone_number
     )
 
-    print(f"SMS sent to {phone_number}. SID: {message.sid}. {verification_code}")
+    print(f"SMS sent to {phone_number}. SID: {message.sid}. {information}")
 
 
-    return jsonify({'satus': 'all good'})
+    return jsonify({'status': 'Message Sent'})
 
 @app.route("/test")
 def backup():
