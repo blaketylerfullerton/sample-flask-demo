@@ -11,6 +11,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
 import random
 import mysql.connector
+from datetime import datetime
 
 
 res_content = None  # Global variable to store response content
@@ -182,9 +183,15 @@ def insert_scheduled_call(caller_name, caller_number, scheduled_time, notes):
         port=25060
     )
     cursor = db_connection.cursor()
+    
+    # Parse the datetime string to a datetime object
+    dt_object = datetime.fromisoformat(scheduled_time.replace('Z', '+00:00'))
+    
+    # Format the datetime object to match MySQL's format
+    formatted_datetime_str = dt_object.strftime('%Y-%m-%d %H:%M:%S')
 
     # Insert scheduling information into the database
-    insert_query = "INSERT INTO scheduled_calls (caller_name, caller_number, scheduled_time, notes) VALUES (%s, %s, %s, %s)"
+    insert_query = "INSERT INTO scheduled_calls (caller_name, caller_number, formatted_datetime_str, notes) VALUES (%s, %s, %s, %s)"
     cursor.execute(insert_query, (caller_name, caller_number, scheduled_time, notes))
     db_connection.commit()
 
