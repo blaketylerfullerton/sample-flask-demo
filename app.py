@@ -11,6 +11,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
 import random
 
+
 from langchain.schema import (
     SystemMessage,
     HumanMessage,
@@ -87,7 +88,7 @@ def query():
     # Get query parameter from request
     query_text = str(data.get('query'))
     print('QUERY TEXT TYPE: ', type(query_text))
-    print('QUERY TEXT: ', query_text,'\n\n\n')
+    print('QUERY TEXT: ', query_text,'\n')
 
     # Use the query text to search through your vector database
     similar_items = vectorstore.similarity_search(query_text, k=3)
@@ -122,8 +123,14 @@ def hello_world():
     return render_template("index.html")
 
 # Endpoint to send SMS with verification code
-@app.route('/sendtext', methods=['POST'])
+@app.route('/message', methods=['POST'])
 def send_verification_code():
+    data = request.get_json()
+    headers = request.headers
+    print("Request Headers:")
+    print(headers)
+    print("Request Data:")
+    print(data)
     # Twilio credentials
     account_sid = os.getenv("account_sid")
     auth_token = os.getenv("auth_token")
@@ -146,7 +153,7 @@ def send_verification_code():
     print(f"SMS sent to {phone_number}. SID: {message.sid}. {verification_code}")
 
 
-    return jsonify({'satus': 'all good'})#@verification_code
+    return jsonify({'satus': 'all good'})
 
 @app.route("/test")
 def backup():
