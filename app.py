@@ -52,7 +52,7 @@ def augment_prompt(query: str):
     # get the text from the results
     source_knowledge = "\n".join([x.page_content for x in results])
     # feed into an augmented prompt
-    augmented_prompt = f"""Using the contexts below, answer the query.
+    augmented_prompt = f"""Using the contexts below, answer the query. be short and consice.
 
     
     {source_knowledge}
