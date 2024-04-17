@@ -11,8 +11,6 @@ from twilio.twiml.messaging_response import MessagingResponse
 from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceResponse, Say
 import random
 
-client = Client(account_sid, auth_token)
-
 from langchain.schema import (
     SystemMessage,
     HumanMessage,
