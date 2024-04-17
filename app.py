@@ -4,12 +4,20 @@ from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 import json
 from datasets import Dataset
-from pinecone import Pinecone
 from pinecone import ServerlessSpec, Pinecone
-#from langchain.vectorstores import Pinecone
 import time
 
-
+from langchain.schema import (
+    SystemMessage,
+    HumanMessage,
+    AIMessage
+)
+messages = [
+    SystemMessage(content="You are a helpful assistant."),
+    HumanMessage(content="Hi AI, how are you today?"),
+    AIMessage(content="I'm great thank you. How can I help you?"),
+    HumanMessage(content="I'd like to understand string theory.")
+]
 # Initialize variables or objects that will be used across requests
 openai_api_key = os.environ["OPENAI_API_KEY"]
 chat = ChatOpenAI(
@@ -34,50 +42,85 @@ index = pc.Index(index_name)
 
 # Initialize embedding model
 embed_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+text_field = "name"  # the metadata field that contains our text
 
+from langchain.vectorstores import Pinecone 
+# initialize the vector store object
+vectorstore = Pinecone(
+    index, embed_model.embed_query, text_field
+)
+def augment_prompt(query: str):
+    # get top 3 results from knowledge base
+    results = vectorstore.similarity_search(query, k=3)
+    # get the text from the results
+    source_knowledge = "\n".join([x.page_content for x in results])
+    # feed into an augmented prompt
+    augmented_prompt = f"""Using the contexts below, answer the query.
+
+    
+    {source_knowledge}
+
+    Query: {query}"""
+    return augmented_prompt
 
 app = Flask(__name__)
 # Define routes
-@app.route("/query", methods=["POST"])
+@app.route("/query", methods=['POST'])
 def query():
     # Get request headers
     headers = request.headers
 
     # Get request data
-    data = request.data
+    data = request.get_json()
 
     # Print headers and data
     print("Request Headers:")
     print(headers)
     print("Request Data:")
     print(data)
+
+    # Check if data is None (indicating request body is not JSON)
+    if data is None:
+        return jsonify({'error': 'Request body is not in JSON format'}), 400
     
+
     # Get query parameter from request
-    query_text = request.json.get("query")
+    query_text = str(data.get('query'))
+    print('QUERY TEXT TYPE: ', type(query_text))
+    print('QUERY TEXT: ', query_text,'\n\n\n')
 
-    text_field = "name"  # the metadata field that contains our text
-
-
-    # initialize the vector store object
-    vectorstore = Pinecone(
-        index, embed_model.embed_query, text_field
-    )
-    
     # Use the query text to search through your vector database
-    similar_items = vectorstore.similarity_search(query_text, k=5)
-    
-    # Extract relevant information from the search results
-    response_data = []
-    for item in similar_items:
-        response_data.append({
-            "name": item.name,
-            "data": item.data
-        })
-    print(response_data)
-    # Return the response
-    return jsonify({"response_data": response_data})
+    similar_items = vectorstore.similarity_search(query_text, k=3)
 
-ngrok_url = "https://5975-2600-8801-be18-a000-74b8-2bdc-2b64-c7f0.ngrok-free.app"
+
+    # Use the query text to search through your vector database
+    similar_items = vectorstore.similarity_search(query_text, k=3)
+    
+    print(similar_items)
+    similar_items = [
+    {
+        "page_content": document.page_content,
+        "metadata": {
+            "description": document.metadata.get("description", ""),
+            "due_at": document.metadata.get("due_at", ""),
+            "points_possible": document.metadata.get("points_possible", 0)
+        }
+    }
+        for document in similar_items
+    ]
+    # create a new user prompt
+    prompt = HumanMessage(
+    content=augment_prompt(
+        f"{query_text}"
+        )
+    )
+
+    res = chat(messages + [prompt])
+    print(res.content)
+    
+    # Return the response
+    return jsonify({"response_data": res.content})
+
 @app.route("/")
 def hello_world():
     return render_template("index.html")
@@ -88,11 +131,6 @@ def hello_world():
 def backup():
     return render_template("index1.html")
 
-# Fake price generator function
-def generate_fake_price():
-    return round(random.uniform(10, 100), 2)
-
-
 @app.route("/endpoint", methods=["POST", "GET"])
 def your_endpoint():
     fake_data = {
@@ -102,22 +140,6 @@ def your_endpoint():
     }
     return jsonify(fake_data)
     
-@app.route("/submit-form", methods=["POST"])
-def submit_form_simple():
-    phone = request.form.get("phone")
-    # Create a dictionary with the form data
-    data = {
-    'To': phone  
-    }  
-    url = ngrok_url + '/make-call'
-    response = requests.post(url, data=data)
-    print(response)
-    
-    if response.status_code == 200:
-        return render_template("index.html")
-    else:
-        return render_template("index.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
