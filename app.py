@@ -196,6 +196,8 @@ def insert_scheduled_call(caller_name, caller_number, scheduled_time, notes):
 @app.route("/schedule_call", methods=['POST'])
 def schedule_call():
     data = request.json
+    print("Request Data:")
+    print(data)
 
     # Extract necessary information from the request data
     caller_name = data.get('caller_name')
