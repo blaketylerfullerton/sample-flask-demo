@@ -12,7 +12,7 @@ from twilio.twiml.voice_response import VoiceResponse, Start, Gather, VoiceRespo
 import random
 import mysql.connector
 from datetime import datetime
-
+from fetchassignments import fetchassignments
 
 res_content = None  # Global variable to store response content
 
@@ -123,6 +123,34 @@ def query():
     
     # Return the response
     return jsonify({"response_data": res.content})
+
+
+
+@app.route("/querysimple", methods=['POST'])
+def query_simple():
+    # Get request headers
+    headers = request.headers
+
+    # Get request data
+    data = request.get_json()
+
+    # Print headers and data
+    print("Request Headers:")
+    print(headers)
+    print("Request Data:")
+    print(data)
+
+    # Check if data is None (indicating request body is not JSON)
+    if data is None:
+        return jsonify({'error': 'Request body is not in JSON format'}), 400
+    
+    # Get query parameter from request
+    phoneNumber = str(data.get('phoneNumber'))
+    
+    next_assignments = fetchassignments(phoneNumber)
+
+    # Return the response
+    return jsonify({"upcoming_assignments": next_assignments})
 
 @app.route("/")
 def hello_world():
