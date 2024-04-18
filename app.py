@@ -146,10 +146,11 @@ def send_verification_code():
     data = request.get_json()
     phone_number = data.get('phoneNumber')
     information = res_content  # Using the response content from the /query endpoint
+    hard_info = data.get('information')
 
     # Send SMS
     message = client.messages.create(
-        body=f'{information}',
+        body=f'{hard_info}',
         from_=twilio_phone_number,
         to=phone_number
     )
