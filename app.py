@@ -172,6 +172,7 @@ def waitingList(email, name):
 @app.route("/append", methods=["GET, POST"])
 def append():
     data = request.get_json()
+    print(data)
     email = data.get("email")
     name = data.get("name")
     email = data.get("email")
