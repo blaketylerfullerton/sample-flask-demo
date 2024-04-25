@@ -177,7 +177,7 @@ def append():
     name = data.get("name")
     email = data.get("email")
     waitingList(email, name)
-    return  return jsonify({"status": "List Joined"})
+    return jsonify({"status": "List Joined"})
 
 
 # Endpoint to send SMS with verification code
