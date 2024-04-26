@@ -13,6 +13,7 @@ import random
 import mysql.connector
 from datetime import datetime
 from fetchassignments import fetchassignments
+from flask_cors import CORS
 
 res_content = None  # Global variable to store response content
 
@@ -63,6 +64,8 @@ def augment_prompt(query: str):
 
 
 app = Flask(__name__)
+CORS(app)
+
 
 
 # Define routes
