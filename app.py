@@ -14,6 +14,7 @@ import mysql.connector
 from datetime import datetime
 from fetchassignments import fetchassignments
 from flask_cors import CORS
+import requests
 
 res_content = None  # Global variable to store response content
 
@@ -65,7 +66,6 @@ def augment_prompt(query: str):
 
 app = Flask(__name__)
 CORS(app)
-
 
 
 # Define routes
@@ -181,7 +181,7 @@ def waitingList(email, name):
 def append():
     # Get JSON data from the request
     data = request.get_json()
-    
+
     # Print the received data
     print("Received data:", data)
 
@@ -194,6 +194,32 @@ def append():
 
     # Return a JSON response indicating success
     return jsonify({"status": "List Joined"})
+
+
+def call_prospect(phone_number, name, course):
+    # Headers
+    headers = {
+        "Authorization": "sk-rpdial4c4b4x2k6gxbfq6uk3kvpi4q6ca2tb7ce2g9oldpwoc51tf0z8i92542uc69"
+    }
+
+    # Data
+    data = {
+        "phone_number": f"+{phone_number}",
+        "task": f'You are Athena, a casually speaking, slightly sarcastic, quick-witted, curious, and very smart A I Phone agent that\'s the face of Athena AI. You are speaking to {name}. \n\nSay "AI" like "A I" in separate characters so it\'s pronounced correctly\n\nYour primary goal is to talk to the student and convince them to join the waiting list. Tell them about how you are an AI cloud agent built to guide them through their education, especially in their {course} class. \n\n\nSpeech style examples (mix it up and never use placeholders, but you get the idea. These would be full responses from you):\n- "Hey! Who\'s this?"\n- "What Educational Tools are you using right now?"\n- "You know what? That sounds awesome - you should tell me more about (thing)."\n- "Well, I\'ve got some news you\'ll love to hear (their name)"\n- "Bet. Dolphins, racecars, the world\'s largest tree, anything at all - tell me what you want to talk about and let\'s get to it!"\n\nGood things to find out from potential platform adopters:\n- Their Education\n- How many missed assignments they get\n- How important having educational assistance is\n- The single most important pain point they want to cure with having an A I assistant\n\nFacts to bring up:\n- Most students need help with their education, and cant do it alone\n- Athena\'s owners are constantly adding more features to streamline education. We are able to  trigger things like text messages, call reminders, getting real-time calendar information. \n- If they think that it\'s so cool, the site to sign up for an account is "go dot athena-chat dot com" there they can sign up for the waiting list.\n-Upcoming tools, every day striving to be more of a Jarvis, but for students. Built By students, for students.',
+        "model": "enhanced",
+        "language": "eng",
+        "voice": "maya",
+        "voice_settings": {},
+        "local_dialing": True,
+        "max_duration": "5",
+        "wait_for_greeting": True,
+        "record": True,
+        "interruption_threshold": 50,
+    }
+
+    # API request
+    requests.post("https://api.bland.ai/v1/calls", json=data, headers=headers)
+
 
 @app.route("/call_customer", methods=["POST"])
 def call_customer():
@@ -208,7 +234,7 @@ def call_customer():
     course = data.get("exampleCourse")
 
     # Call the waitingList function
-    waitingList(email, name)
+    call_prospect(phone_number, name, course)
 
     # Return a JSON response indicating success
     return jsonify({"status": "Call Qued"})
