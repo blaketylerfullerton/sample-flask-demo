@@ -169,14 +169,22 @@ def waitingList(email, name):
     return render_template("index.html")
 
 
-@app.route("/append", methods=["GET, POST"])
+@app.route("/append", methods=["POST"])
 def append():
+    # Get JSON data from the request
     data = request.get_json()
-    print(data)
+    
+    # Print the received data
+    print("Received data:", data)
+
+    # Extract email and name from the received data
     email = data.get("email")
     name = data.get("name")
-    email = data.get("email")
+
+    # Call the waitingList function
     waitingList(email, name)
+
+    # Return a JSON response indicating success
     return jsonify({"status": "List Joined"})
 
 
