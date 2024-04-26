@@ -217,9 +217,16 @@ def call_prospect(phone_number, name, course):
         "interruption_threshold": 50,
     }
 
-    # API request
-    requests.post("https://api.bland.ai/v1/calls", json=data, headers=headers)
-
+    # Making the API request
+    response = requests.post("https://api.bland.ai/v1/calls", json=data, headers=headers)
+    
+    # Checking if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Parsing the response content as JSON
+        response_data = response.json()
+        print("Response:", response_data)
+    else:
+        print("Failed to make the API request. Status code:", response.status_code)
 
 @app.route("/call_customer", methods=["POST"])
 def call_customer():
