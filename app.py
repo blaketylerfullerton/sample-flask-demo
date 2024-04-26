@@ -195,6 +195,24 @@ def append():
     # Return a JSON response indicating success
     return jsonify({"status": "List Joined"})
 
+@app.route("/call_customer", methods=["POST"])
+def call_customer():
+    # Get JSON data from the request
+    data = request.get_json()
+    # Print the received data
+    print("Received Customer Data:", data)
+
+    # Extract email and name from the received data
+    phone_number = data.get("phoneNumber")
+    name = data.get("name")
+    course = data.get("exampleCourse")
+
+    # Call the waitingList function
+    waitingList(email, name)
+
+    # Return a JSON response indicating success
+    return jsonify({"status": "Call Qued"})
+
 
 # Endpoint to send SMS with verification code
 @app.route("/message", methods=["POST"])
