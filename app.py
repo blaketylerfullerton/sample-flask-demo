@@ -148,25 +148,30 @@ def hello_world():
 
 
 def waitingList(email, name):
-    # Connect to MySQL server
-    db_connection = mysql.connector.connect(
-        host="athena-do-user-16198044-0.c.db.ondigitalocean.com",
-        user="doadmin",
-        password=os.environ["DB_API_KEY"],
-        database="defaultdb",
-        port=25060,
-    )
-    cursor = db_connection.cursor()
+    try:
+        # Connect to MySQL server
+        db_connection = mysql.connector.connect(
+            host="athena-do-user-16198044-0.c.db.ondigitalocean.com",
+            user="doadmin",
+            password=os.environ["DB_API_KEY"],
+            database="defaultdb",
+            port=25060,
+        )
+        cursor = db_connection.cursor()
 
-    # Insert scheduling information into the database
-    insert_query = "INSERT INTO users (email,name) VALUES (%s, %s)"
-    cursor.execute(insert_query, (email, name))
-    db_connection.commit()
+        # Insert scheduling information into the database
+        insert_query = "INSERT INTO users (email,name) VALUES (%s, %s)"
+        cursor.execute(insert_query, (email, name))
+        db_connection.commit()
 
-    # Close database connection
-    cursor.close()
-    db_connection.close()
-    return render_template("index.html")
+        # Close database connection
+        cursor.close()
+        db_connection.close()
+        return render_template("index.html")
+    except mysql.connector.Error as error:
+        # Handle any MySQL errors
+        print("Error occurred:", error)
+        return "An error occurred while processing your request."
 
 
 @app.route("/append", methods=["POST"])
