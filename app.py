@@ -151,7 +151,6 @@ def hello_world():
 
 @app.route("/testforbland", methods = ["POST"])
 def testforbland():
-    pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
     # Get request data
     data = request.get_json()
     print(data)
