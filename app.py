@@ -35,7 +35,7 @@ dataset = Dataset.from_dict({"Assignment": json_data})
 pine_cone_api_key = os.environ["PINECONE_API_KEY"]
 pc = Pinecone(api_key=pine_cone_api_key)
 spec = ServerlessSpec(cloud="aws", region="us-east-1")
-
+index_name = "sample-index"
 index = pc.Index(index_name)
 
 # Initialize embedding model
