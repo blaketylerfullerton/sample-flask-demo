@@ -149,6 +149,14 @@ def query_simple():
 def hello_world():
     return render_template("index.html")
 
+@app.route("/testforbland", methods = ["POST"])
+def testforbland():
+    # Get request data
+    data = request.get_json()
+    print(data)
+    return jsonify({"Status": "Message Received"})
+    
+
 
 def waitingList(email, name):
     try:
