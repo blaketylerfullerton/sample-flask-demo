@@ -159,11 +159,7 @@ def testforbland():
 
     index.upsert(records)
 
-    # Insert each record into the Pinecone index
-    for record in records:
-        record_id = record.get('id')
-        values = record.get('values')
-        index.upsert(ids=[record_id], vectors=[values])
+    
     
     return jsonify({"Status": "Records inserted successfully"})
     
