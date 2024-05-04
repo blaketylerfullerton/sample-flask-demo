@@ -151,10 +151,21 @@ def hello_world():
 
 @app.route("/testforbland", methods = ["POST"])
 def testforbland():
+    pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
     # Get request data
     data = request.get_json()
     print(data)
-    return jsonify({"Status": "Message Received"})
+    # Extract records from the request
+    records = data.get('records', [])
+    index = pc.Index("sample-index")
+
+    # Insert each record into the Pinecone index
+    for record in records:
+        record_id = record.get('id')
+        values = record.get('values')
+        index.upsert(ids=[record_id], vectors=[values])
+    
+    return jsonify({"Status": "Records inserted successfully"})
     
 
 
