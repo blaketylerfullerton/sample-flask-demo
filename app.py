@@ -157,6 +157,8 @@ def testforbland():
     records = data.get('records', [])
     index = pc.Index("sample-index")
 
+    index.upsert(records)
+
     # Insert each record into the Pinecone index
     for record in records:
         record_id = record.get('id')
